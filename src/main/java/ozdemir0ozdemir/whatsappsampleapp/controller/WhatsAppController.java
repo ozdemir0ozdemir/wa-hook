@@ -1,19 +1,33 @@
 package ozdemir0ozdemir.whatsappsampleapp.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
-@RequestMapping
+@RequestMapping("/webhooks")
 class WhatsAppController {
 
-//    @PostMapping("/whatsapp")
-//    void whatsapp(@RequestBody String body) {
-//        System.out.println(body);
-//    }
+    private static final Logger log = LoggerFactory.getLogger(WhatsAppController.class);
 
-    @PostMapping("/{path}")
-    void whatsapp(@RequestBody String body, @PathVariable String path) {
-        System.out.println("PATH: " + path);
-        System.out.println("BODY: " + body);
+    @PostMapping
+    void whatsapp(@RequestBody String body,
+                  HttpServletRequest request) {
+        log.info("webhook requested: {}", body);
+        log.info("request: {}", request);
+    }
+
+
+    @GetMapping
+    String verification(
+            @RequestParam(name = "hub.mode") String hubMode,
+            @RequestParam(name = "hub.challenge") String hubChallenge,
+            @RequestParam(name = "hub.verify_token") String hubVerifyToken) {
+
+        log.info("verify requested. mode: {}, challenge: {}, verify token: {}",
+                hubMode, hubChallenge, hubVerifyToken);
+        return hubChallenge;
     }
 }
